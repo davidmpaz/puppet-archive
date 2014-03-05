@@ -57,26 +57,34 @@ define archive (
   $username         = undef,
   $password         = undef,
   $proxy            = undef,
-  $dependency_class = Class['archive::prerequisites'],
+  $dependency_class = 'archive::prerequisites',
   $exec_path        = ['/usr/local/bin', '/usr/bin', '/bin'],
   $user             = undef) {
 
+  if $dependency_class != '' {
+    include $dependency_class
+    $dep_class = Class[$dependency_class]
+  }
+  else 
+  {
+    $dep_class = undef
+  }
+
   archive::download {"${name}.${extension}":
-    ensure          => $ensure,
-    url             => $url,
-    checksum        => $checksum,
-    digest_url      => $digest_url,
-    digest_string   => $digest_string,
-    digest_type     => $digest_type,
-    timeout         => $timeout,
-    src_target      => $src_target,
-    allow_insecure  => $allow_insecure,
-    allow_redirects => $allow_redirects,
-    username        => $username,
-    password        => $password,
-    proxy           => $proxy,
-    require         => $dependency_class,
-    exec_path       => $exec_path,
+    ensure         => $ensure,
+    url            => $url,
+    checksum       => $checksum,
+    digest_url     => $digest_url,
+    digest_string  => $digest_string,
+    digest_type    => $digest_type,
+    timeout        => $timeout,
+    src_target     => $src_target,
+    allow_insecure => $allow_insecure,
+    username       => $username,
+    password       => $password,
+    proxy          => $proxy,
+    require        => $dep_class,
+    exec_path      => $exec_path,
   }
 
   archive::extract { $name:
